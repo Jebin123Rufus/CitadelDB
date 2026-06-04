@@ -67,5 +67,5 @@ app.use((err, _req, res, _next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`CitadelDB API running on http://localhost:${PORT}`);
+  console.log(`CitadelDB API running on https://citadeldb.onrender.com`);
 });
