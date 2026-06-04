@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageSquare, Send, Bot, User } from 'lucide-react';
+import { MessageSquare, Send, Bot, User, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { api } from '../api/client';
 import MarkdownView from '../components/MarkdownView';
+import GlossaryTerm from '../components/GlossaryTerm';
 
 const STARTERS = [
   'Explain CVE-2024-21413 and its impact',
@@ -20,6 +21,7 @@ export default function AiAssistant() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [activeGuide, setActiveGuide] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -55,7 +57,7 @@ export default function AiAssistant() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] animate-fade-in">
-      <header className="mb-4">
+      <header className="mb-3">
         <h1 className="text-2xl font-bold text-white flex items-center gap-2">
           <MessageSquare className="w-7 h-7 text-citadel-accent" />
           AI Cybersecurity Assistant
@@ -63,7 +65,9 @@ export default function AiAssistant() {
         <p className="text-gray-500 text-sm">Cybersecurity-focused • Llama 3.3 70B</p>
       </header>
 
-      <div className="flex flex-wrap gap-2 mb-4">
+      <DeveloperGuide />
+
+      <div className="flex flex-wrap gap-2 mb-3">
         {STARTERS.map((s) => (
           <button
             key={s}
@@ -133,6 +137,47 @@ export default function AiAssistant() {
           </button>
         </form>
       </div>
+    </div>
+  );
+}
+
+function DeveloperGuide() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border border-citadel-700/40 rounded-xl bg-citadel-900/60 overflow-hidden text-xs mb-3">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full px-4 py-2.5 hover:bg-citadel-800/40 flex items-center justify-between text-gray-300 transition-colors font-semibold"
+      >
+        <span className="flex items-center gap-2">
+          <HelpCircle className="w-3.5 h-3.5 text-citadel-accent" />
+          Developer & Guide: Interactive Chat Assistant
+        </span>
+        {open ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+      </button>
+      {open && (
+        <div className="p-4 border-t border-citadel-700/30 space-y-2 bg-citadel-950/40 leading-relaxed text-gray-400">
+          <p>
+            Welcome to the <strong>AI Assistant</strong>! This is an interactive chat space specialized in security engineering.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div>
+              <h4 className="font-bold text-white mb-0.5">Sample Prompts:</h4>
+              <ul className="list-disc pl-4 space-y-0.5">
+                <li>Explain a specific <GlossaryTerm term="cve">CVE ID</GlossaryTerm>.</li>
+                <li>Ask for defensive mitigations for a specific <GlossaryTerm term="cwe">CWE</GlossaryTerm>.</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-white mb-0.5">Playbooks:</h4>
+              <p>
+                Ask the bot for step-by-step incident containment scripts or threat hunting queries (e.g. Splunk/KQL).
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

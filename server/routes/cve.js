@@ -5,11 +5,14 @@ const router = Router();
 
 router.get('/search', async (req, res, next) => {
   try {
-    const { keyword, severity, page = 0, limit = 20 } = req.query;
+    const { keyword, severity, year, type, cwe, page = 0, limit = 20 } = req.query;
     const startIndex = parseInt(page, 10) * parseInt(limit, 10);
     const data = await nvd.searchCves({
       keyword,
       severity,
+      year,
+      type,
+      cwe,
       resultsPerPage: parseInt(limit, 10),
       startIndex,
     });

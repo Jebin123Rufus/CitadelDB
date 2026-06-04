@@ -5,21 +5,22 @@ export default {
     extend: {
       colors: {
         citadel: {
-          950: '#030712',
-          900: '#0a0f1a',
-          800: '#111827',
-          700: '#1f2937',
-          600: '#374151',
-          accent: '#06b6d4',
-          'accent-dim': '#0891b2',
+          950: '#09090b',
+          900: '#18181b',
+          800: '#27272a',
+          700: '#3f3f46',
+          600: '#52525b',
+          accent: '#3b82f6',
+          'accent-dim': '#2563eb',
           danger: '#ef4444',
           warning: '#f59e0b',
           success: '#10b981',
-          purple: '#8b5cf6',
+          purple: '#6366f1',
         },
       },
       fontFamily: {
-        sans: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
         display: ['Inter', 'system-ui', 'sans-serif'],
       },
       animation: {
@@ -37,8 +38,8 @@ export default {
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         pulseGlow: {
-          '0%, 100%': { boxShadow: '0 0 0 0 rgba(6, 182, 212, 0.2)' },
-          '50%': { boxShadow: '0 0 20px 4px rgba(6, 182, 212, 0.15)' },
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.2)' },
+          '50%': { boxShadow: '0 0 20px 4px rgba(59, 130, 246, 0.15)' },
         },
       },
     },

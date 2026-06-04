@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Wrench } from 'lucide-react';
+import { Wrench, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { api } from '../api/client';
 import MarkdownView from '../components/MarkdownView';
 import Loading from '../components/Loading';
+import GlossaryTerm from '../components/GlossaryTerm';
 
 const TOOLS = [
   { id: 'cvss', name: 'CVSS Score Explainer', placeholder: '9.8 or CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H', field: 'input' },
@@ -48,6 +49,8 @@ export default function SecurityToolkit() {
         </h1>
         <p className="text-gray-500 text-sm mt-1">Educational cybersecurity utilities with AI explanations</p>
       </header>
+
+      <DeveloperGuide />
 
       <div className="flex flex-wrap gap-2">
         {TOOLS.map((t) => (
@@ -101,6 +104,48 @@ export default function SecurityToolkit() {
               <MarkdownView content={explanation} />
             </div>
           )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DeveloperGuide() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border border-citadel-700/40 rounded-xl bg-citadel-900/60 overflow-hidden text-xs">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full px-5 py-3.5 hover:bg-citadel-800/40 flex items-center justify-between text-gray-300 transition-colors font-semibold"
+      >
+        <span className="flex items-center gap-2">
+          <HelpCircle className="w-4 h-4 text-citadel-accent" />
+          Developer & Analyst Guide: Security Utilities
+        </span>
+        {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+      </button>
+      {open && (
+        <div className="p-5 border-t border-citadel-700/30 space-y-3 bg-citadel-950/40 leading-relaxed text-gray-400">
+          <p>
+            Welcome to the <strong>Security Toolkit</strong>! This suite is designed to compute and explain common cybersecurity metrics and hashes.
+          </p>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <h4 className="font-bold text-white mb-1">Toolbox Summary:</h4>
+              <ul className="list-disc pl-4 space-y-1">
+                <li><strong><GlossaryTerm term="cvss">CVSS</GlossaryTerm> Explainer:</strong> Decodes vector strings into threat factors like network complexity and user requirements.</li>
+                <li><strong><GlossaryTerm term="hash">Hash</GlossaryTerm> Identifier:</strong> Detects hash types (MD5, SHA1, SHA256) to index known malware.</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-white mb-1">Risk Analyzers:</h4>
+              <ul className="list-disc pl-4 space-y-1">
+                <li><strong>URL Risk:</strong> Heuristically parses URLs for potential domain hijacking or phishing.</li>
+                <li><strong>Headers:</strong> Checks domain configuration for security indicators (e.g. CSP, HSTS, X-Frame-Options).</li>
+              </ul>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Fingerprint, Scan } from 'lucide-react';
+import { Fingerprint, Scan, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { api } from '../api/client';
 import MarkdownView from '../components/MarkdownView';
 import Loading from '../components/Loading';
+import GlossaryTerm from '../components/GlossaryTerm';
 
 const EXAMPLES = [
   { label: 'IP', value: '192.0.2.1' },
@@ -46,12 +47,14 @@ export default function IocAnalysis() {
       <header>
         <h1 className="text-2xl font-bold text-white flex items-center gap-2">
           <Fingerprint className="w-7 h-7 text-citadel-accent" />
-          IOC Analysis Center
+          <GlossaryTerm term="ioc">IOC</GlossaryTerm> Analysis Center
         </h1>
         <p className="text-gray-500 text-sm mt-1">
-          Analyze IPs, domains, URLs, and file hashes with heuristic + AI assessment
+          Analyze IPs, domains, URLs, and file <GlossaryTerm term="hash">hashes</GlossaryTerm> with heuristic + AI assessment
         </p>
       </header>
+
+      <DeveloperGuide />
 
       <div className="panel p-5">
         <form onSubmit={analyze} className="space-y-4">
@@ -129,6 +132,49 @@ export default function IocAnalysis() {
           <div className="panel p-5">
             <h2 className="font-semibold text-citadel-accent mb-3">AI Threat Analysis</h2>
             <MarkdownView content={result.aiAnalysis} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DeveloperGuide() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border border-citadel-700/40 rounded-xl bg-citadel-900/60 overflow-hidden text-xs">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full px-5 py-3.5 hover:bg-citadel-800/40 flex items-center justify-between text-gray-300 transition-colors font-semibold"
+      >
+        <span className="flex items-center gap-2">
+          <HelpCircle className="w-4 h-4 text-citadel-accent" />
+          Developer & Analyst Guide: Analyzing Indicators of Compromise (IOC)
+        </span>
+        {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+      </button>
+      {open && (
+        <div className="p-5 border-t border-citadel-700/30 space-y-3 bg-citadel-950/40 leading-relaxed text-gray-400">
+          <p>
+            Welcome to the <strong>IOC Analysis Center</strong>! This module investigates security files, connections, and domains to detect malicious traces.
+          </p>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <h4 className="font-bold text-white mb-1">Supported IOC Types:</h4>
+              <ul className="list-disc pl-4 space-y-1">
+                <li><strong>IP Address:</strong> Pinpoints server connection points linked to botnets or command servers.</li>
+                <li><strong>Domain/URL:</strong> Traces web nodes used in phishing or malware delivery.</li>
+                <li><strong>File Hash:</strong> Cryptographic checks (SHA256) matching known threat binaries.</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-white mb-1">Analysis Blocks:</h4>
+              <ul className="list-disc pl-4 space-y-1">
+                <li><strong>Heuristics:</strong> Fast patterns checks (e.g. key length, registry access, domain age).</li>
+                <li><strong>AI Analysis:</strong> Contextual logic determining campaign alignment and risk level.</li>
+              </ul>
+            </div>
           </div>
         </div>
       )}

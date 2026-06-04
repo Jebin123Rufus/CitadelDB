@@ -12,12 +12,13 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { api } from '../api/client';
 import Loading from '../components/Loading';
 import SeverityBadge from '../components/SeverityBadge';
+import GlossaryTerm from '../components/GlossaryTerm';
 
-const COLORS = ['#06b6d4', '#8b5cf6', '#ef4444', '#f59e0b', '#22c55e', '#3b82f6'];
+const COLORS = ['#3b82f6', '#6366f1', '#ef4444', '#f59e0b', '#10b981', '#4f46e5'];
 
 export default function ThreatTrends() {
   const [data, setData] = useState(null);
@@ -37,8 +38,10 @@ export default function ThreatTrends() {
           <TrendingUp className="w-7 h-7 text-citadel-accent" />
           Threat Trends Analytics
         </h1>
-        <p className="text-gray-500 text-sm mt-1">30-day vulnerability trends from live NVD data</p>
+        <p className="text-gray-500 text-sm mt-1">30-day vulnerability trends from live <GlossaryTerm term="NVD">NVD</GlossaryTerm> data</p>
       </header>
+
+      <DeveloperGuide />
 
       <div className="panel">
         <div className="panel-header">
@@ -49,8 +52,8 @@ export default function ThreatTrends() {
             <LineChart data={data.timeline || []}>
               <XAxis dataKey="date" tick={{ fill: '#9ca3af', fontSize: 10 }} />
               <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} />
-              <Tooltip contentStyle={{ background: '#111827', border: '1px solid #374151' }} />
-              <Line type="monotone" dataKey="count" stroke="#06b6d4" name="Total" strokeWidth={2} />
+              <Tooltip contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8 }} />
+              <Line type="monotone" dataKey="count" stroke="#3b82f6" name="Total" strokeWidth={2} />
               <Line type="monotone" dataKey="critical" stroke="#ef4444" name="Critical" strokeWidth={2} />
               <Line type="monotone" dataKey="high" stroke="#f97316" name="High" strokeWidth={2} />
             </LineChart>
@@ -79,7 +82,7 @@ export default function ThreatTrends() {
                     <Cell key={i} fill={COLORS[i % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ background: '#111827', border: '1px solid #374151' }} />
+                <Tooltip contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8 }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -94,8 +97,8 @@ export default function ThreatTrends() {
               <BarChart data={data.cvssDistribution || []}>
                 <XAxis dataKey="range" tick={{ fill: '#9ca3af', fontSize: 11 }} />
                 <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: '#111827', border: '1px solid #374151' }} />
-                <Bar dataKey="count" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                <Tooltip contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8 }} />
+                <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -151,6 +154,48 @@ export default function ThreatTrends() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function DeveloperGuide() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border border-citadel-700/40 rounded-xl bg-citadel-900/60 overflow-hidden text-xs">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full px-5 py-3.5 hover:bg-citadel-800/40 flex items-center justify-between text-gray-300 transition-colors font-semibold"
+      >
+        <span className="flex items-center gap-2">
+          <HelpCircle className="w-4 h-4 text-citadel-accent" />
+          Developer & Analyst Guide: Analyzing Threat Trends
+        </span>
+        {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+      </button>
+      {open && (
+        <div className="p-5 border-t border-citadel-700/30 space-y-3 bg-citadel-950/40 leading-relaxed text-gray-400">
+          <p>
+            Welcome to the <strong>Threat Trends</strong> explorer! Here we map data spanning the last 30 days to extract historical patterns.
+          </p>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <h4 className="font-bold text-white mb-1">Timeline & Score Metrics:</h4>
+              <ul className="list-disc pl-4 space-y-1">
+                <li><strong>Timeline Chart:</strong> Spot spikes where publications surge (indicating potential active campaign periods).</li>
+                <li><strong>CVSS Score Dist:</strong> Grouping vulnerabilities into tiers. Helpful for budget allocation in patching teams.</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-white mb-1">Categories & Vectors:</h4>
+              <ul className="list-disc pl-4 space-y-1">
+                <li><strong>Vectors:</strong> Showcases how attacks are pivoting (e.g. adjacent network shifts).</li>
+                <li><strong>Most Severe:</strong> Highest rated vulnerabilities requiring critical attention.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

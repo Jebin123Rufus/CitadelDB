@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Target, ChevronRight, Search } from 'lucide-react';
+import { Target, ChevronRight, Search, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { api } from '../api/client';
 import Loading from '../components/Loading';
+import GlossaryTerm from '../components/GlossaryTerm';
 
 const TACTIC_COLORS = [
-  '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4',
+  '#ef4444', '#f97316', '#eab308', '#22c55e', '#10b981',
   '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e',
   '#84cc16', '#6366f1', '#a855f7', '#0ea5e9',
 ];
@@ -43,10 +44,12 @@ export default function AttackExplorer() {
       <header>
         <h1 className="text-2xl font-bold text-white flex items-center gap-2">
           <Target className="w-7 h-7 text-red-400" />
-          MITRE ATT&CK Explorer
+          <GlossaryTerm term="mitre att&ck">MITRE ATT&CK</GlossaryTerm> Explorer
         </h1>
         <p className="text-gray-500 text-sm mt-1">Browse tactics, techniques, and defensive guidance</p>
       </header>
+
+      <DeveloperGuide />
 
       <div className="panel p-4">
         <div className="relative">
@@ -163,6 +166,47 @@ export default function AttackExplorer() {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function DeveloperGuide() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border border-citadel-700/40 rounded-xl bg-citadel-900/60 overflow-hidden text-xs">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full px-5 py-3.5 hover:bg-citadel-800/40 flex items-center justify-between text-gray-300 transition-colors font-semibold"
+      >
+        <span className="flex items-center gap-2">
+          <HelpCircle className="w-4 h-4 text-citadel-accent" />
+          Developer & Analyst Guide: Exploring MITRE ATT&CK
+        </span>
+        {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+      </button>
+      {open && (
+        <div className="p-5 border-t border-citadel-700/30 space-y-3 bg-citadel-950/40 leading-relaxed text-gray-400">
+          <p>
+            Welcome to the <strong>MITRE ATT&CK</strong> interface! This globally adopted framework indexes real-world adversary behavior.
+          </p>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <h4 className="font-bold text-white mb-1">Structure:</h4>
+              <ul className="list-disc pl-4 space-y-1">
+                <li><strong><GlossaryTerm term="tactic">Tactics</GlossaryTerm>:</strong> The actor's objective (e.g. <em>Execution</em> or <em>Persistence</em>).</li>
+                <li><strong><GlossaryTerm term="technique">Techniques</GlossaryTerm>:</strong> The specific method used to perform that objective (e.g., using PowerShell script engines).</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-white mb-1">Defense & Detection:</h4>
+              <p>
+                Each technique links to <strong>Detection Guidance</strong> (logs or signs of activity) and <strong>Defensive Recommendations</strong> (concrete settings to stop the exploit).
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

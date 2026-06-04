@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Newspaper, Sparkles, ExternalLink } from 'lucide-react';
+import { Newspaper, Sparkles, ExternalLink, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { api } from '../api/client';
 import Loading from '../components/Loading';
 import MarkdownView from '../components/MarkdownView';
+import GlossaryTerm from '../components/GlossaryTerm';
 import { formatDate } from '../utils/severity';
 
 export default function SecurityNews() {
@@ -77,6 +78,8 @@ export default function SecurityNews() {
         </button>
       </header>
 
+      <DeveloperGuide />
+
       <div className="panel p-4 flex flex-wrap gap-3">
         <input
           className="input-field flex-1 min-w-[200px]"
@@ -130,10 +133,10 @@ export default function SecurityNews() {
                   <ExternalLink className="w-3 h-3" /> Read
                 </a>
               </div>
-              <p className="text-sm text-gray-400 mt-3">{article.summary || 'No summary available.'}</p>
+              <CollapsibleNewsSummary text={article.summary || 'No summary available.'} />
               <button
                 onClick={() => summarizeArticle(article)}
-                className="text-xs text-citadel-accent mt-3 hover:underline"
+                className="text-xs text-citadel-accent mt-3 hover:underline font-semibold"
               >
                 {summaries[article.id] ? 'AI Summary' : 'Generate AI Summary & Takeaway'}
               </button>
@@ -144,6 +147,69 @@ export default function SecurityNews() {
               )}
             </article>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CollapsibleNewsSummary({ text }) {
+  const [expanded, setExpanded] = useState(false);
+  const words = text ? text.split(' ') : [];
+  const isLong = words.length > 25;
+
+  if (!isLong) return <p className="text-sm text-gray-400 mt-3">{text}</p>;
+
+  return (
+    <div className="mt-3">
+      <p className={`text-sm text-gray-400 ${expanded ? '' : 'line-clamp-2'}`}>
+        {text}
+      </p>
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="text-[10px] text-citadel-accent mt-1 hover:underline focus:outline-none font-semibold block"
+      >
+        {expanded ? 'Hide summary' : 'Read full summary'}
+      </button>
+    </div>
+  );
+}
+
+function DeveloperGuide() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border border-citadel-700/40 rounded-xl bg-citadel-900/60 overflow-hidden text-xs">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full px-5 py-3.5 hover:bg-citadel-800/40 flex items-center justify-between text-gray-300 transition-colors font-semibold"
+      >
+        <span className="flex items-center gap-2">
+          <HelpCircle className="w-4 h-4 text-citadel-accent" />
+          Developer & Analyst Guide: Security News Feed
+        </span>
+        {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+      </button>
+      {open && (
+        <div className="p-5 border-t border-citadel-700/30 space-y-3 bg-citadel-950/40 leading-relaxed text-gray-400">
+          <p>
+            Welcome to the <strong>Security News Center</strong>! This aggregates RSS feeds from top-tier research publications (e.g. CISA, The Hacker News) to help you track current threats.
+          </p>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <h4 className="font-bold text-white mb-1">RSS Feeds & Categories:</h4>
+              <ul className="list-disc pl-4 space-y-1">
+                <li><strong>RSS:</strong> Rich Site Summary. A standard feed format used to deliver regularly changing web content.</li>
+                <li><strong>AI Threat Briefing:</strong> Consolidates headers and analyzes them into a unified summary of today's active campaigns.</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-white mb-1">AI Article Summary:</h4>
+              <p>
+                Clicking "Generate AI Summary" feeds the article body to the secure LLM to extract key technical impact and recommended actions, saving reading time.
+              </p>
+            </div>
+          </div>
         </div>
       )}
     </div>

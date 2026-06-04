@@ -109,24 +109,54 @@ export async function searchCves({
   pubEndDate,
   resultsPerPage = 20,
   startIndex = 0,
+  year,
+  type,
+  cwe,
 }) {
+  let start = pubStartDate;
+  let end = pubEndDate;
+  if (year && !keyword && !start) {
+    start = `${year}-01-01T00:00:00.000`;
+    end = `${year}-04-30T23:59:59.000`;
+  }
+
+  const hasLocalFilters = year || type || cwe || severity;
+  const fetchLimit = hasLocalFilters ? 100 : Math.min(resultsPerPage, 100);
+
   const params = {
-    resultsPerPage: Math.min(resultsPerPage, 100),
+    resultsPerPage: fetchLimit,
     startIndex,
   };
   if (keyword) params.keywordSearch = keyword;
-  if (pubStartDate) params.pubStartDate = pubStartDate;
-  if (pubEndDate) params.pubEndDate = pubEndDate;
+  if (start) params.pubStartDate = start;
+  if (end) params.pubEndDate = end;
 
   const { total, results } = await fetchNvd(params);
 
   let filtered = results;
+
   if (severity) {
     const sev = severity.toUpperCase();
-    filtered = results.filter((r) => r.severity === sev);
+    filtered = filtered.filter((r) => r.severity === sev);
   }
 
-  return { total: filtered.length, results: filtered, startIndex };
+  if (year) {
+    filtered = filtered.filter((r) => r.id.startsWith(`CVE-${year}-`) || (r.published && r.published.startsWith(year)));
+  }
+
+  if (type) {
+    const t = type.toUpperCase();
+    filtered = filtered.filter((r) => r.impact?.attackVector === t);
+  }
+
+  if (cwe) {
+    const c = cwe.toUpperCase();
+    filtered = filtered.filter((r) => r.categories && r.categories.some(cat => cat.toUpperCase() === c || cat.toUpperCase().includes(c)));
+  }
+
+  const slicedResults = filtered.slice(0, resultsPerPage);
+
+  return { total: filtered.length, results: slicedResults, startIndex };
 }
 
 export async function getRecentCves(days = 7, limit = 50) {

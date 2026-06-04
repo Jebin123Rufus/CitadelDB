@@ -5,7 +5,7 @@
 @layer base {
   * {
     scrollbar-width: thin;
-    scrollbar-color: #374151 #0a0f1a;
+    scrollbar-color: #3f3f46 #09090b;
   }
 
   body {
@@ -98,5 +98,5 @@
 
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
-  stroke: #374151 !important;
+  stroke: #27272a !important;
 }

@@ -13,10 +13,11 @@ import {
   AreaChart,
   Area,
 } from 'recharts';
-import { AlertTriangle, ShieldAlert, Activity, Zap } from 'lucide-react';
+import { AlertTriangle, ShieldAlert, Activity, Zap, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { api } from '../api/client';
 import Loading from '../components/Loading';
 import SeverityBadge from '../components/SeverityBadge';
+import GlossaryTerm from '../components/GlossaryTerm';
 import { formatDate } from '../utils/severity';
 
 const SEV_COLORS = {
@@ -74,9 +75,11 @@ export default function Dashboard() {
       <header>
         <h1 className="text-2xl font-bold text-white">Threat Intelligence Dashboard</h1>
         <p className="text-gray-500 text-sm mt-1">
-          Live vulnerability intelligence • 14-day NVD monitoring window
+          Live vulnerability intelligence • 14-day <GlossaryTerm term="NVD">NVD</GlossaryTerm> monitoring window
         </p>
       </header>
+
+      <DeveloperGuide />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map(({ label, value, icon: Icon, color }) => (
@@ -101,7 +104,7 @@ export default function Dashboard() {
                 <XAxis dataKey="name" tick={{ fill: '#9ca3af', fontSize: 11 }} />
                 <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} />
                 <Tooltip
-                  contentStyle={{ background: '#111827', border: '1px solid #374151', borderRadius: 8 }}
+                  contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8 }}
                 />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                   {severityData.map((e) => (
@@ -134,7 +137,7 @@ export default function Dashboard() {
                     <Cell key={i} fill={['#22c55e', '#eab308', '#f97316', '#ef4444', '#6b7280'][i]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ background: '#111827', border: '1px solid #374151' }} />
+                <Tooltip contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8 }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -151,8 +154,8 @@ export default function Dashboard() {
               <AreaChart data={vectorData}>
                 <XAxis dataKey="name" tick={{ fill: '#9ca3af', fontSize: 10 }} />
                 <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} />
-                <Tooltip contentStyle={{ background: '#111827', border: '1px solid #374151' }} />
-                <Area type="monotone" dataKey="value" stroke="#06b6d4" fill="#06b6d4" fillOpacity={0.2} />
+                <Tooltip contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8 }} />
+                <Area type="monotone" dataKey="value" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -223,6 +226,49 @@ function CveList({ title, items, full }) {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function DeveloperGuide() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border border-citadel-700/40 rounded-xl bg-citadel-900/60 overflow-hidden text-xs">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full px-5 py-3.5 hover:bg-citadel-800/40 flex items-center justify-between text-gray-300 transition-colors font-semibold"
+      >
+        <span className="flex items-center gap-2">
+          <HelpCircle className="w-4 h-4 text-citadel-accent" />
+          Developer & Analyst Guide: Reading the Dashboard
+        </span>
+        {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+      </button>
+      {open && (
+        <div className="p-5 border-t border-citadel-700/30 space-y-3 bg-citadel-950/40 leading-relaxed text-gray-400">
+          <p>
+            Welcome to the <strong>Threat Intelligence Dashboard</strong>! This section tracks security alerts over a rolling 14-day window.
+          </p>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <h4 className="font-bold text-white mb-1">Key Metrics Defined:</h4>
+              <ul className="list-disc pl-4 space-y-1">
+                <li><strong>Monitored <GlossaryTerm term="CVE">CVEs</GlossaryTerm>:</strong> The count of unique security flaws published by <GlossaryTerm term="NVD">NVD</GlossaryTerm> recently.</li>
+                <li><strong>Avg <GlossaryTerm term="CVSS">CVSS</GlossaryTerm>:</strong> The mean threat severity score. Tiers above 7.0 represent significant danger.</li>
+                <li><strong>Trending <GlossaryTerm term="CWE">CWE</GlossaryTerm> Categories:</strong> Common coding errors (like SQL injection) popping up in recent releases.</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-white mb-1">Interactive Charts:</h4>
+              <ul className="list-disc pl-4 space-y-1">
+                <li><strong>Severity:</strong> Triage checklist count based on threat levels.</li>
+                <li><strong>Attack Vector:</strong> Illustrates exposure. e.g. "Network" vectors require internet-facing shields.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
