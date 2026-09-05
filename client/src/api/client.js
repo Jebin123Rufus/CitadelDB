@@ -1,4 +1,5 @@
-const API = import.meta.env.VITE_API_URL;
+const RAW_API = import.meta.env.VITE_API_URL || '/api';
+const API = RAW_API.endsWith('/') ? RAW_API.slice(0, -1) : RAW_API;
 
 function buildQuery(params = {}) {
   const query = new URLSearchParams();
@@ -12,7 +13,8 @@ function buildQuery(params = {}) {
 }
 
 async function request(path, options = {}) {
-  const res = await fetch(`${API}${path}`, {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  const res = await fetch(`${API}${normalizedPath}`, {
     headers: { 'Content-Type': 'application/json', ...options.headers },
     ...options,
   });

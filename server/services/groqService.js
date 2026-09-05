@@ -1,6 +1,12 @@
 import Groq from 'groq-sdk';
 
-const MODEL = 'llama-3.3-70b-versatile';
+const FALLBACK_MODELS = [
+  process.env.GROQ_MODEL,
+  'openai/gpt-oss-120b',
+  'openai/gpt-oss-20b',
+  'qwen/qwen3.6-27b',
+  'allam-2-7b',
+].filter(Boolean);
 
 let groqClient = null;
 
@@ -25,15 +31,29 @@ Rules:
 - Never fabricate CVE details; if data is missing, state assumptions clearly.
 - Frame advice for both technical practitioners and security leadership when appropriate.`;
 
-async function chatCompletion(messages, maxTokens = 4096) {
+async function chatCompletion(messages, maxTokens = 2048) {
   const groq = getClient();
-  const completion = await groq.chat.completions.create({
-    model: MODEL,
-    messages: [{ role: 'system', content: CYBER_SYSTEM }, ...messages],
-    temperature: 0.4,
-    max_tokens: maxTokens,
-  });
-  return completion.choices[0]?.message?.content || '';
+  let lastError = null;
+
+  for (const model of FALLBACK_MODELS) {
+    try {
+      const completion = await groq.chat.completions.create({
+        model,
+        messages: [{ role: 'system', content: CYBER_SYSTEM }, ...messages],
+        temperature: 0.4,
+        max_tokens: maxTokens,
+      });
+      let content = completion.choices[0]?.message?.content || '';
+      // Strip internal reasoning/think blocks if present
+      content = content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+      if (content) return content;
+    } catch (err) {
+      console.warn(`Groq completion failed with model ${model}:`, err.message);
+      lastError = err;
+    }
+  }
+
+  throw lastError || new Error('Failed to generate completion from AI service');
 }
 
 export async function analyzeThreat(input, cveContext = null) {

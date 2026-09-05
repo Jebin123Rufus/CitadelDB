@@ -62,7 +62,7 @@ export default function AiAssistant() {
           <MessageSquare className="w-7 h-7 text-citadel-accent" />
           AI Cybersecurity Assistant
         </h1>
-        <p className="text-gray-500 text-sm">Cybersecurity-focused • Llama 3.3 70B</p>
+        <p className="text-gray-500 text-sm">Cybersecurity-focused • Groq AI Intelligence</p>
       </header>
 
       <DeveloperGuide />
